@@ -6,8 +6,11 @@ mraa.addSubplatform(mraa.GENERIC_FIRMATA, "/dev/ttyACM0");
 
 var groveSensor = require('jsupm_grove');
 
+var lcd = require('jsupm_i2clcd');
 
-var light = new groveSensor.GroveLight(0+512);
+var display = new lcd.Jhd1313m1(512, 0x3E, 0x62);
+
+var light = new groveSensor.GroveLight(512);
 
 var stateUpdate = {
     "state": {
@@ -49,6 +52,10 @@ device.subscribe('$aws/things/webinar_gateway/input');
 device
   .on('message', function(topic, payload) {
     console.log('message', topic, payload.toString());
+    console.log('lcd message: ', JSON.parse(payload.toString()).state.desired.LCD)
+    display.setCursor(0,0);
+    lcd_message = JSON.parse(payload.toString()).state.desired.LCD
+    display.write(lcd_message + '                 ')
   });
 
 
